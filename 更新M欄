@@ -1,0 +1,19 @@
+function 更新M欄(sheet, row) {
+  var firstRow = getMergedFirstRow(sheet, row, 4); // 取得 D 欄的合併範圍第一行
+  if (!firstRow || row !== firstRow) return; // 只有第一行才執行，避免重複運算
+
+  // ✅ 一次性讀取 K、L 欄數值
+  var values = sheet.getRange(firstRow, 11, 1, 2).getValues()[0];
+  var kValue = Number(values[0]) || 0;
+  var lValue = Number(values[1]) || 0;
+
+  var status = (kValue < 0.6 && lValue < 0.6) ? "❌" : "✔️";
+
+  // ✅ 找到該合併範圍的所有 M 欄（合併區域內的 M 欄應該統一）
+  var mergedRange = sheet.getRange(firstRow, 13, 1, 1).getMergedRanges()[0]; // M 欄的合併範圍
+  if (mergedRange) {
+    mergedRange.setValue(status); // ✅ 直接設定整個 M 欄合併範圍，避免逐行更新
+  } else {
+    sheet.getRange(firstRow, 13).setValue(status); // 沒有合併的話，只更新第一行
+  }
+}
